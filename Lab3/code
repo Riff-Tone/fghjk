@@ -17,13 +17,13 @@
 
 #-------------------------------------
 Main:
-	addi $t0, $zero, 1			    #t0=1
-	sw $t0, 0($s2)				      #P[0] = 1
+	addi $t0, $zero, 1		#t0=1
+	sw $t0, 0($s2)			#P[0] = 1
 
-	addi $s5, $zero, 1			    #s5:j=0+1
+	addi $s5, $zero, 1		#s5:j=0+1
 
     ForLoop:
-        slt $t0, $s5, $s1		  #t0=j<n
+        slt $t0, $s5, $s1		#t0=j<n
       
         beq $zero, $t0, EndForLoop	#if j>=n we out this hoe
       
@@ -31,10 +31,10 @@ Main:
         
 	#loading arguments for "power" function
 
-        sll $t1, $s5, 2			  #t1=j*4 (offset)
-        add $t1, $t1, $s0		  #t1=address of A[j]
+        sll $t1, $s5, 2			#t1=j*4 (offset)
+        add $t1, $t1, $s0		#t1=address of A[j]
         
-        lw $a0, 0($t1)			  #a0=value of A[j]
+        lw $a0, 0($t1)			#a0=value of A[j]
         add $a1, $zero, $s5		#a1=j
         
         
@@ -42,7 +42,7 @@ Main:
         jal Power
         
   #returning (v0:new pow) from power function
-        add $s4, $zero, $v0	  #pow = v0(new pow)
+        add $s4, $zero, $v0	  	#pow = v0(new pow)
         
   #loading arguments for "new element" function
     
@@ -56,12 +56,12 @@ Main:
         jal NewElement
         
   #returning from "new element" function
-        addi $s5, $s5, 1		  #s5:j++
+        addi $s5, $s5, 1		#s5:j++
         j ForLoop
 
     EndForLoop:
     
-        addi $s3, $s3,1			  #s3:k++
+        addi $s3, $s3,1			#s3:k++
         j Exit
 
 #---function power(a0=int a,a1=int b)---
@@ -73,33 +73,33 @@ Power:
 
 PowForLoop:
 
-        slt $t0, $t2, $a1		  #t0=l<b
+        slt $t0, $t2, $a1		#t0=l<b
         
-        beq $t0, $zero, EndPowForLoop	  #if l>=b we out this hoe
+        beq $t0, $zero, EndPowForLoop	#if l>=b we out this hoe
         
         mult $t1 , $a0
-        mflo $t1				      #t1=new pow * a
+        mflo $t1			#t1=new pow * a
         
-        addi $t2, $t2, 1		  #l++
+        addi $t2, $t2, 1		#l++
         j PowForLoop
 
 EndPowForLoop:
 
-		add $v0, $zero, $t1		    #returning value:v0=new pow
+	add $v0, $zero, $t1		#returning value:v0=new pow
         
-        jr $ra					      #return to main
+        jr $ra				#return to main
 
 
 #--new element(a0=int *P,a1=int k,a2=int pow)--
 
 NewElement:
 
-        sll $t1, $a1, 2			  #t1= k*4 (offset)
+        sll $t1, $a1, 2			#t1= k*4 (offset)
         
-        add $t1, $t1, $a0		  #t1:address of P[k]
+        add $t1, $t1, $a0		#t1:address of P[k]
         
-        sw $a2, 0($t1)			  #P[k] = pow
-        jr $ra					      #return to main
+        sw $a2, 0($t1)			#P[k] = pow
+        jr $ra				#return to main
 
 
 #----------void return-------------
