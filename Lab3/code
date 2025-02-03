@@ -1,0 +1,110 @@
+#-------------------------------------
+#s0 reserved for pointer address of A
+#s1 reserved for array size of A=n
+#s2 reserved for pointer address of P
+#s3 reserved for array size of P=k
+#s4 reserved for the int pow
+#s5 reserved for the for loop value j
+
+#t0 holds true:false(1:0) values for branches;
+#t1 used for offset and address, as well as temporary variables
+#t2 used once for temporary variable
+
+#a0-a2, used for arguments for function respectfully
+#v0, return value used only from the power function
+
+#ra, holds the address in memory where the function was called
+
+#-------------------------------------
+Main:
+	addi $t0, $zero, 1			    #t0=1
+	sw $t0, 0($s2)				      #P[0] = 1
+
+	addi $s5, $zero, 1			    #s5:j=0+1
+
+    ForLoop:
+        slt $t0, $s5, $s1		  #t0=j<n
+      
+        beq $zero, $t0, EndForLoop	#if j>=n we out this hoe
+      
+        add $s3, $zero, $s5		#k=j
+        
+	#loading arguments for "power" function
+
+        sll $t1, $s5, 2			  #t1=j*4 (offset)
+        add $t1, $t1, $s0		  #t1=address of A[j]
+        
+        lw $a0, 0($t1)			  #a0=value of A[j]
+        add $a1, $zero, $s5		#a1=j
+        
+        
+	#calling "power" function
+        jal Power
+        
+  #returning (v0:new pow) from power function
+        add $s4, $zero, $v0	  #pow = v0(new pow)
+        
+  #loading arguments for "new element" function
+    
+        add $a0, $zero, $s2		#a0:address of P
+        
+        add $a1, $zero, $s3		#a1:value of k
+        
+        add $a2, $zero, $s4		#a2:value of pow
+
+  #calling "new element" function
+        jal NewElement
+        
+  #returning from "new element" function
+        addi $s5, $s5, 1		  #s5:j++
+        j ForLoop
+
+    EndForLoop:
+    
+        addi $s3, $s3,1			  #s3:k++
+        j Exit
+
+#---function power(a0=int a,a1=int b)---
+Power:
+
+        add $t1, $a0, $zero		#t1:new pow=a0
+        
+        addi $t2, $zero, 1		#t2:l=1
+
+PowForLoop:
+
+        slt $t0, $t2, $a1		  #t0=l<b
+        
+        beq $t0, $zero, EndPowForLoop	  #if l>=b we out this hoe
+        
+        mult $t1 , $a0
+        mflo $t1				      #t1=new pow * a
+        
+        addi $t2, $t2, 1		  #l++
+        j PowForLoop
+
+EndPowForLoop:
+
+		add $v0, $zero, $t1		    #returning value:v0=new pow
+        
+        jr $ra					      #return to main
+
+
+#--new element(a0=int *P,a1=int k,a2=int pow)--
+
+NewElement:
+
+        sll $t1, $a1, 2			  #t1= k*4 (offset)
+        
+        add $t1, $t1, $a0		  #t1:address of P[k]
+        
+        sw $a2, 0($t1)			  #P[k] = pow
+        jr $ra					      #return to main
+
+
+#----------void return-------------
+
+
+Exit:
+
+
