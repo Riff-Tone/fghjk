@@ -1,0 +1,90 @@
+#-----------------------------------
+#s0 is given as the head of the list
+#s1 is given as the address of new node
+#s2 is given as the place of insertion
+#s3 is gicen as the value of new node
+#-----------------------------------
+
+Main:
+#the initalization of these values are already given
+
+						          #loads arguments for the function call
+add $a0, $s0, $zero		#a0 = head
+add $a1, $s2, $zero		#a1 = n, place of insertion
+add $a2, $s1, #zero		#a2 = address of newnode
+
+jal addNode				    #after return call we have the value of newnode
+
+add $s3, $v0, $zero		# setting the return value from the function into s3
+
+j End
+
+#------------------------------------
+#for addNode
+#t1, is for addr1
+#t2, is for addr2
+#------------------------------------
+addNode:
+
+beq $zero, $a0, Continue 	#if head == null, we out this hoe
+beq $zero, $a1, Continue 	#if n == 0, we out this hoe
+
+							
+addi $sp, $sp, -4			    #reserves 1 word for return address in the stack
+sw $ra, 0($sp)				    #ra = return address to main into the stack
+
+jal findNode				      #call the findNode function
+
+lw $ra, 0($sp)				    #reload ra from the stack
+addi $sp, $sp, 4			    #liberate 1 word from the stack
+
+add $t1, $zero,$v0			  #t1= address of a[n]
+add $t2, $zero,$v1			  #t2= address of a[n+1]
+
+sw $a2, 4($t1)				    #addr1->next = newnode
+sw $t2, 4($a2)				    #newnode->next = addr2
+
+lw $v0, 0($a2)				    #load value from head, which will be the newnode
+
+jr $ra						        #return to main
+
+	Continue:
+
+      sw $a0, 4($a2)		  #newnode->next = head
+      add $s0, $zero, $a2	#setting the head(from main s0) = newnode
+      
+      lw $v0, 0($a2)		  #load value from newnode. 
+      jr $ra				      #return to main
+
+#------------------------------------
+#for findNode
+#t0 is reserved for branch conditions
+#t3 is reserved for node*curr
+#t4 is reserved for Int i
+#t5 is used for the if statment current->next=0
+#------------------------------------
+findNode:
+  addi $t3, $a0,0			    #node* curr = head
+  addi $t4, $zero, 1		  #i = 1
+
+forLoop:
+  slt $t0, $t4, $a1			  #t0 = i<n
+  beq $t0, $zero, break		#if i>=n we out this hoe
+  
+  lw $t3, 4($t3)			    #curr = curr->next
+  
+  beq $zero, $t3, break		#if 0==curr, we out this hoe
+  
+  lw $t5, 4($t3)			    #loads curr->next into t5
+  beq $t5, $zero, break		#if curr->next==0, we out this hoe
+  
+  addi $t4, $t4, 1			  #i++
+j forLoop
+
+break:
+add $v0, $zero, $t3       #v0 = curr (a[n])
+add $v1, $zero, $t5       #v1 = curr->next (a[n+1])
+
+jr $ra
+
+End:
