@@ -15,7 +15,7 @@ Main:
 				#loads arguments for the function call
 add $a0, $s0, $zero		#a0 = head
 add $a1, $s2, $zero		#a1 = n, place of insertion
-add $a2, $s1, #zero		#a2 = address of newnode
+add $a2, $s1, $zero		#a2 = address of newnode
 
 jal addNode			#goes to the addNode function
 				#returned newnode value that is stored in v0
